@@ -5,10 +5,12 @@
 #----------------------------------------------
 
 import numpy as np
+import matplotlib.pyplot as plt
 from collections import deque
 from sklearn.utils.linear_assignment_ import linear_assignment
 
 import detection_layer
+import cv2
 
 from utils.object_tracking_module import tracking_layer
 from utils.object_tracking_module import tracking_utils
@@ -27,7 +29,7 @@ def assign_detections_to_trackers(trackers, detections, iou_thrd = 0.3):
         for d,det in enumerate(detections):
             IOU_mat[t,d] = tracking_utils.box_iou2(trk,det) 
     
-    matched_idx = linear_assignment(-IOU_mat)
+    matched_idx = linear_assignment(-IOU_mat)        
 
     unmatched_trackers, unmatched_detections = [], []
     for t,trk in enumerate(trackers):
@@ -59,14 +61,8 @@ def processor(img):
     global max_detection
     global min_detection
     global track_id_list 
-
-    try:
-        img_dim = (img.shape[1], img.shape[0])
-    except AttributeError as error:
-        import car_rcnn
-    except Exception as exception:
-        import car_rcnn
-
+    
+    img_dim = (img.shape[1], img.shape[0])
     z_box = det.get_localization(img)       
     x_box =[]       
     if len(tracker_list) > 0:

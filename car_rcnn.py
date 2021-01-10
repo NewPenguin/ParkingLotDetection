@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import cv2
+import pafy
 import mrcnn.config
 import mrcnn.utils
 from mrcnn.model import MaskRCNN
@@ -44,7 +45,7 @@ ROOT_DIR = Path(".")
 MODEL_DIR = os.path.join(ROOT_DIR, "logs")
 
 # Local path to trained weights file
-COCO_MODEL_PATH = os.path.join(ROOT_DIR, "mask_rcnn_coco.h5")
+COCO_MODEL_PATH = os.path.join(ROOT_DIR, "carpark.h5")
 
 # Download COCO trained weights from Releases if needed
 if not os.path.exists(COCO_MODEL_PATH):
@@ -54,7 +55,9 @@ if not os.path.exists(COCO_MODEL_PATH):
 IMAGE_DIR = os.path.join(ROOT_DIR, "images")
 
 # Video file or camera to process - set this to 0 to use your webcam instead of a video file
-VIDEO_SOURCE = "input_images_and_videos/the_output.mp4"
+url = 'https://youtu.be/h0Wn8wFtyAk'
+vPafy = pafy.new(url)
+play = vPafy.getbest(preftype="mp4")
 
 # Create a Mask-RCNN model in inference mode
 model = MaskRCNN(mode="inference", model_dir=MODEL_DIR, config=MaskRCNNConfig())
@@ -66,7 +69,7 @@ model.load_weights(COCO_MODEL_PATH, by_name=True)
 parked_car_boxes = None
 
 # Load the video file we want to run detection on
-video_capture = cv2.VideoCapture(VIDEO_SOURCE)
+video_capture = cv2.VideoCapture(play.url)
 
 # How many frames of video we've seen in a row with a parking space open
 free_space_frames = 0
@@ -163,6 +166,7 @@ while video_capture.isOpened():
                 sms_sent = True
 
         # Show the frame of video on the screen
+        frame = cv2.resize(frame, (720, 576))
         cv2.imshow('Video', frame)
 
     # Hit 'q' to quit
