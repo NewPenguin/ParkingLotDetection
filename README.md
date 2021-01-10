@@ -115,7 +115,7 @@ zstd                      1.4.5
 
 lines:
 
-python type2.py
+python livecardetection.py
 
 if the output program fails to initialise run:
 
